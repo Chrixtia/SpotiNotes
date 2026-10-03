@@ -2,28 +2,41 @@
   "name": "spotinotes",
   "version": "1.0.0",
   "description": "A bot that syncs Spotify playback status to Facebook Messenger notes",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "get-refresh-token": "node src/get_refresh_token.js"
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "get-refresh-token": "tsx src/get_refresh_token.ts",
+    "test": "tsc --noEmit"
   },
   "keywords": [
     "spotify",
     "facebook",
     "messenger",
     "bot",
-    "sync"
+    "sync",
+    "cli"
   ],
-  "author": "Chrixia",
+  "author": "Chrixtia",
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.7.2",
     "dotenv": "^16.0.0",
     "express": "^4.18.0",
     "fca-delta": "^3.9.0",
-    "fs": "^0.0.1-security",
     "open": "^8.4.0",
+    "prompts": "^2.4.2",
     "spotify-web-api-node": "^5.0.2",
     "stfca": "^1.0.20"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.0",
+    "@types/prompts": "^2.4.9",
+    "@types/spotify-web-api-node": "^5.0.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
   }
 }

@@ -1,104 +1,178 @@
-# Spotify to Messenger Notes Sync [ SPOTI-NOTES ]
+<div align="center">
 
-A bot that syncs your current Spotify playback status to Facebook Messenger notes.
+# SpotiNotes
 
-## Features
+Automate live Spotify playback status syncing to Facebook Messenger notes in real time through an interactive terminal CLI dashboard.
 
-- Automatically updates your Facebook Messenger note with current Spotify track
-- Runs in the background with automatic restarts
-- Configurable update intervals and active hours
-- Handles network interruptions gracefully
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Spotify API](https://img.shields.io/badge/API-SPOTIFY-7928CA?style=for-the-badge&logo=spotify&logoColor=white)](https://developer.spotify.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-## Setup
+<br/><br/>
 
-1. **Install Dependencies:**
+![Preview](assets/preview.png)
+
+</div>
+
+---
+
+## Overview
+
+Sharing music activity manually across social platforms is repetitive and interrupts listening workflows. While Spotify provides live listening status, Facebook Messenger does not natively connect to third-party streaming services for its personal notes feature.
+
+**SpotiNotes** bridges this gap by querying the Spotify Web API for current playback state and automatically updating Facebook Messenger inbox notes via the Facebook Chat API. The application is packaged as an interactive terminal CLI featuring real-time playback telemetry, countdown timers, keyboard controls, and self-contained OAuth token generation.
+
+> [!] **Note:** Facebook Messenger notes default to "FRIENDS" privacy upon creation and automatically expire after 24 hours if no subsequent tracks are published.
+
+---
+
+## Highlights
+
+| Feature | Description |
+| :--- | :--- |
+| **Interactive Terminal CLI** | Full-screen terminal dashboard with navigation menus, diagnostics, and keyboard hotkeys. |
+| **Live Playback Telemetry** | Displays current song title, artist, track duration, and an animated progress bar. |
+| **Integrated Token Generator** | Embedded OAuth callback server on port `8888` that saves refresh tokens to `.env` automatically. |
+| **Active Operating Hours** | Configurable operating window to restrict note syncing during sleeping or work hours. |
+| **Resilient Networking** | Uncaught exception isolation and automatic connection retries when internet connectivity drops. |
+| **Strict TypeScript Architecture** | Typed interfaces, CommonJS compatibility, ambient definitions, and zero inline comment clutter. |
+
+---
+
+## Installation
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (version 18 or higher recommended)
+- A Spotify Developer account ([Developer Dashboard](https://developer.spotify.com/dashboard))
+- An active Facebook account session cookie export
+
+### Step-by-Step Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Chrixtia/SpotiNotes.git
+   cd SpotiNotes
+   ```
+
+2. **Install project dependencies:**
    ```bash
    npm install
    ```
 
-2. **Create a Spotify App and Get Credentials:**
-   - Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
-   - Log in with your Spotify account and click **"Create an App"**.
-   - Fill in the app name (e.g., "Messenger Sync Bot") and description.
-   - Set the **Redirect URI** to `http://127.0.0.1:8888/callback`.
-   - Save the app and note the **Client ID** and **Client Secret**.
-   - Run `npm run get-refresh-token` to authorize the app and obtain the **Refresh Token** (ensure your `.env` has the Client ID and Secret first).
+3. **Initialize Environment Configuration:**
+   Copy the example template to create your `.env` file:
+   ```bash
+   cp .env.example .env
+   ```
 
-3. **Configure Environment Variables:**
-   - Copy `.env.example` to `.env`
-   - Fill in your Spotify API credentials and other settings in `.env`
+4. **Register Spotify Application:**
+   - Log into the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) and create an app.
+   - Set the Redirect URI to `http://127.0.0.1:8888/callback`.
+   - Copy your **Client ID** and **Client Secret** into `.env`.
 
-4. **Get Facebook App State:**
-   - Use a Chrome extension like "c3c-fb-state" while logged into Facebook
-   - Export the JSON and save it as `appstate.json` in the project root
-   - Update `FBStatePath` in `.env` if needed
+5. **Provide Facebook AppState:**
+   - Export your Facebook browser session cookies using a cookie manager extension.
+   - Save the resulting JSON array as `appstate.json` in the root of the project.
 
-5. **Run the Bot:**
-   - Double-click `scripts/silent_start.vbs` for silent background operation
-   - Or run `scripts/Run.bat` to see console output
+> [!] **Important:** Keep your `appstate.json` and `.env` files strictly private. Never commit them to version control.
 
-## Project Structure
+---
 
+## Quick Start
+
+### Running the Terminal CLI
+
+To compile TypeScript and immediately open the interactive terminal interface:
+
+```bash
+npm run start
 ```
+
+> [!] **Tip:** You can also run the development server directly without an explicit build step using `npm run dev`.
+
+### CLI Controls & Navigation
+
+When the live sync dashboard is active, control the bot using the following hotkeys:
+- **`[S]` or `[Space]`**: Trigger an immediate sync iteration
+- **`[P]`**: Pause or resume synchronization
+- **`[B]`**: Stop bot and return to the main CLI menu
+- **`[Q]` or `[Ctrl+C]`**: Gracefully exit SpotiNotes
+
+---
+
+## Configuration Reference
+
+<details>
+<summary><b>Click to expand config options</b></summary>
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `SpotifyClientID` | `string` | _None_ | Client ID from Spotify Developer Dashboard |
+| `SpotifyClientSecret` | `string` | _None_ | Client Secret from Spotify Developer Dashboard |
+| `SpotifyRefreshToken` | `string` | _None_ | Long-lived refresh token obtained via CLI authorization |
+| `FBStatePath` | `string` | `appstate.json` | Relative or absolute path to Facebook session JSON file |
+| `TimezoneGMTOffset` | `number` | `8` | Timezone offset from UTC in hours (e.g. 8 for PHT/SGT) |
+| `ActiveHours` | `string` | `0-24` | Allowed operating window formatted as `start-end` (24-hour clock) |
+| `MinimumPlayTimeMs` | `number` | `60000` | Minimum track playback progress (ms) before note updates |
+| `UpdateIntervalRange` | `string` | `10-12` | Randomized delay window between status checks (in minutes) |
+
+</details>
+
+---
+
+## Automated Tests
+
+Run automated type-checking and build verification:
+
+```bash
+npm test
+```
+
+---
+
+## Architecture
+
+```text
+SpotiNotes/
 ├── src/
-│   ├── index.js              # Main entry point and bot loop
-│   ├── get_refresh_token.js  # Script to obtain Spotify refresh token
+│   ├── index.ts                # Main CLI entry point and bot coordinator
+│   ├── get_refresh_token.ts    # Standalone OAuth helper script
+│   ├── cli/
+│   │   ├── dashboard.ts        # Live terminal dashboard and input handling
+│   │   ├── theme.ts            # ANSI color palettes (pink, blue, green) and banner
+│   │   └── tokenGenerator.ts   # Interactive Spotify token generator
 │   ├── config/
-│   │   └── index.js          # Configuration loading from environment
+│   │   └── index.ts            # Typed environment configuration and .env writer
 │   ├── services/
-│   │   ├── spotify.js        # Spotify API integration
-│   │   └── messenger.js      # Facebook Messenger integration
+│   │   ├── messenger.ts        # Facebook Chat API and note mutation service
+│   │   └── spotify.ts          # Spotify Web API playback query service
+│   ├── types/
+│   │   └── stfca.d.ts          # Ambient type definitions for stfca library
 │   └── utils/
-│       └── index.js          # Utility functions
-├── scripts/
-│   ├── Run.bat               # Windows batch script to run the bot
-│   └── silent_start.vbs      # Silent startup script
-├── appstate.json             # Facebook app state (not included)
-├── package.json          # Node.js dependencies
-├── .env                  # Environment configuration
-├── .env.example          # Environment template
-└── README.md             # This file
+│       └── index.ts            # Active operating hours calculation utility
+├── dist/                       # Compiled production JavaScript files
+├── appstate.json               # Facebook session cookies (user provided)
+├── tsconfig.json               # TypeScript compiler configuration
+├── package.json                # Project dependencies and script declarations
+├── .env.example                # Environment variables template
+└── README.md                   # Project documentation
 ```
 
-## Configuration
+---
 
-Edit the `.env` file to customize:
+<div align="center">
 
-- `SpotifyClientID`, `SpotifyClientSecret`, `SpotifyRefreshToken`: Your Spotify API credentials
-- `FBStatePath`: Path to your Facebook app state file
-- `TimezoneGMTOffset`: Your timezone offset from GMT
-- `ActiveHours`: Hours when the bot should update notes (format: start-end, e.g., 0-24)
-- `MinimumPlayTimeMs`: Minimum play time before updating note
-- `UpdateIntervalRange`: Update interval range in minutes (format: min-max, e.g., 10-12)
-- `minPlayTimeMs`: Minimum play time before updating note
-- `updateIntervalRange`: Random interval between updates
+[![GitHub](https://img.shields.io/badge/GitHub-Chrixtia-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Chrixtia)
+&nbsp;
+[![Discord](https://img.shields.io/badge/Discord-Connect-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/users/1443584667235389623)
+&nbsp;
+[![Email](https://img.shields.io/badge/Email-Contact_Me-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:christian.pangan.viente@gmail.com)
 
-## Dependencies
+</div>
 
-- `stfca`: Facebook Chat API
-- `spotify-web-api-node`: Spotify Web API
-- `dotenv`: Environment variable loader
-- `bluebird`: Promise library
-- `fca-delta`: Alternative Facebook API
-- `fs`: File system utilities
-- `express`: Web server for token retrieval
-- `open`: Opens URLs in browser
+---
 
-## Notes
+## License
 
-- The bot will continue running even if internet connection drops
-- It automatically restarts on crashes
-- Facebook notes are set to "FRIENDS" privacy by default
-- This project is for educational purposes only. Use at your own risk!
-
-## Links
-
-- Discord: https://discord.com/users/1443584667235389623
-- GitHub: https://github.com/Chrixtia
-
-## Future Features [ I guess? ]
-
-- Multiple Accounts
-- Add songs directly to notes
-- Add lyrics randomized
-
+This project is licensed under the [MIT License](LICENSE).
